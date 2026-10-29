@@ -17,6 +17,7 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
       m_SwapFaceButtons(prefs.swapFaceButtons),
       m_MouseWasInVideoRegion(false),
       m_PendingMouseButtonsAllUpOnVideoRegionLeave(false),
+      m_CrossDisplayDrag(qEnvironmentVariableIntValue("MOONLIGHT_CROSS_DISPLAY_DRAG") != 0),
       m_PointerRegionLockActive(false),
       m_PointerRegionLockToggledByUser(false),
       m_FakeMouseCaptureActive(false),
@@ -38,6 +39,11 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
     // System keys are always captured when running without a DE
     if (!WMUtils::isRunningDesktopEnvironment()) {
         m_CaptureSystemKeysMode = StreamingPreferences::CSK_ALWAYS;
+    }
+
+    if (m_CrossDisplayDrag) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "Cross-display drag enabled: drag positions outside the video region are sent unclamped");
     }
 
     // SDL3 breaks our auto-capture-on-leave logic because the mouse focus has already

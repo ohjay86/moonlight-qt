@@ -139,10 +139,6 @@ void SdlInputHandler::handleMouseMotionEvent(SDL_MouseMotionEvent* event)
 
         mouseInVideoRegion = isMouseInVideoRegion(x, y, windowWidth, windowHeight);
 
-        // Clamp motion to the video region
-        x = qMin(qMax(x - dst.x, 0), dst.w);
-        y = qMin(qMax(y - dst.y, 0), dst.h);
-
         // Send the mouse position update if one of the following is true:
         // a) it is in the video region now
         // b) it just left the video region (to ensure the mouse is clamped to the video boundary)
@@ -157,6 +153,19 @@ void SdlInputHandler::handleMouseMotionEvent(SDL_MouseMotionEvent* event)
                 m_PendingMouseButtonsAllUpOnVideoRegionLeave = false;
             }
         }
+
+        if (m_CrossDisplayDrag && m_PendingMouseButtonsAllUpOnVideoRegionLeave) {
+            // Let the drag continue past the window edge. The host maps positions
+            // outside the stream onto the neighbouring host display.
+            x -= dst.x;
+            y -= dst.y;
+        }
+        else {
+            // Clamp motion to the video region
+            x = qMin(qMax(x - dst.x, 0), dst.w);
+            y = qMin(qMax(y - dst.y, 0), dst.h);
+        }
+
         if (mouseInVideoRegion || m_MouseWasInVideoRegion || m_PendingMouseButtonsAllUpOnVideoRegionLeave) {
             LiSendMousePositionEvent((short)x, (short)y, dst.w, dst.h);
         }

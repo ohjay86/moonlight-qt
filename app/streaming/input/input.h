@@ -213,6 +213,7 @@ private:
     bool m_NeedsManualCaptureOnLeave;
     bool m_MouseWasInVideoRegion;
     bool m_PendingMouseButtonsAllUpOnVideoRegionLeave;
+    bool m_CrossDisplayDrag;
     bool m_PointerRegionLockActive;
     bool m_PointerRegionLockToggledByUser;
 
